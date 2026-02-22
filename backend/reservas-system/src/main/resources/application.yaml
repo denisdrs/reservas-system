@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: reservas-system
+  datasource:
+    url: jdbc:postgresql://localhost:5432/reservas_local
+    username: admin
+    password: senha123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: ${JWT_SECRET:sua_chave_secreta_com_pelo_menos_32_caracteres}
+  expiration: 86400000
