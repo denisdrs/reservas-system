@@ -15,14 +15,13 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          # Cache desativado para limpar erros de diretório
+          # Cache desativado para evitar conflitos de diretório no monorepo
           
       - name: Build Maven
-        # Ajustamos para o caminho relativo correto dentro do runner
-        working-directory: ./backend/reservas-system
+        # Usamos o caminho relativo direto a partir da raiz do repositório
         run: |
-          chmod +x mvnw
-          ./mvnw clean package -DskipTests
+          chmod +x backend/reservas-system/mvnw
+          cd backend/reservas-system && ./mvnw clean package -DskipTests
 
       - name: Login Docker Hub
         uses: docker/login-action@v3
@@ -31,7 +30,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build e Push imagem Prod
-        working-directory: ./backend
+        # O Dockerfile está na pasta /backend
+        working-directory: backend
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
