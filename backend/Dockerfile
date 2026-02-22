@@ -1,18 +1,22 @@
-# Stage 1: Build
-FROM maven:3.9-eclipse-temurin-21-alpine AS builder
+# Estágio 1: Build
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-COPY src ./src
-RUN mvn clean package -DskipTests -B
 
-# Stage 2: Runtime
-FROM eclipse-temurin:21-jre-alpine AS production
+# Copia apenas os arquivos necessários para baixar as dependências (otimiza cache)
+COPY reservas-system/.mvn/ .mvn/
+COPY reservas-system/mvnw reservas-system/pom.xml ./
+RUN chmod +x mvnw && ./mvnw dependency:go-offline
+
+# Copia o código fonte e compila o projeto
+COPY reservas-system/src ./src
+RUN ./mvnw clean package -DskipTests
+
+# Estágio 2: Runtime
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-COPY --from=builder /app/target/*.jar app.jar
-USER appuser
+
+# O caminho do JAR muda porque ele foi gerado dentro da subpasta target
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD wget -qO- http://localhost:8080/actuator/health || exit 1
 ENTRYPOINT ["java", "-jar", "app.jar"]
