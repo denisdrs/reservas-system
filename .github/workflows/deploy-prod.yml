@@ -15,10 +15,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          # Removido o cache para evitar o erro de 'No file matched' que trava o build
+          # Cache desativado para limpar erros de diretório
           
       - name: Build Maven
-        working-directory: backend/reservas-system
+        # Ajustamos para o caminho relativo correto dentro do runner
+        working-directory: ./backend/reservas-system
         run: |
           chmod +x mvnw
           ./mvnw clean package -DskipTests
@@ -30,9 +31,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build e Push imagem Prod
-        working-directory: backend
+        working-directory: ./backend
         run: |
-          # O contexto do Docker continua sendo /backend para achar o Dockerfile
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
 
