@@ -1,0 +1,24 @@
+# Credenciais — NUNCA versionar
+.env
+.env.local
+*.pem
+*.key
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+.idea/
+*.iml
+
+# Node / React
+node_modules/
+dist/
+build/
+frontend/.env.local
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
