@@ -10,18 +10,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          # Cache desativado para evitar conflitos de diretório no monorepo
-          
-      - name: Build Maven
-        # Usamos o caminho relativo direto a partir da raiz do repositório
+      - name: Localizar e Preparar Maven
         run: |
-          chmod +x backend/reservas-system/mvnw
-          cd backend/reservas-system && ./mvnw clean package -DskipTests
+          # Busca o arquivo mvnw em qualquer lugar do repositório e entra na pasta dele
+          MVNW_PATH=$(find . -name "mvnw" -not -path "*/target/*" | head -n 1)
+          MVNW_DIR=$(dirname "$MVNW_PATH")
+          echo "Diretório encontrado: $MVNW_DIR"
+          
+          chmod +x "$MVNW_PATH"
+          cd "$MVNW_DIR" && ./mvnw clean package -DskipTests
 
       - name: Login Docker Hub
         uses: docker/login-action@v3
@@ -30,7 +27,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build e Push imagem Prod
-        # O Dockerfile está na pasta /backend
+        # Mantemos 'backend' como base para o Dockerfile
         working-directory: backend
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
