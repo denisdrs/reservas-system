@@ -10,17 +10,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Listar arquivos (Debug)
+        run: ls -R  # Isso vai provar se o pom.xml chegou ou não
+
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: maven
-          # O padrão '**' busca o pom.xml em qualquer subpasta, evitando o erro de 'No file matched'
-          cache-dependency-path: '**/pom.xml'
-
+          # Removemos o cache temporariamente para o build não abortar aqui
+          
       - name: Build Maven
-        # Ajustado para a pasta onde o projeto Java realmente reside
         working-directory: backend/reservas-system
         run: |
           chmod +x mvnw
@@ -33,7 +33,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build e Push imagem Prod
-        # O contexto do docker build permanece em /backend para encontrar o Dockerfile
         working-directory: backend
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
@@ -46,7 +45,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Atualiza a imagem e reinicia apenas o container da API
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
             cd ~/reservas-system
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
