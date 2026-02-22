@@ -15,19 +15,18 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          # REMOVEMOS as linhas 'cache: maven' e 'cache-dependency-path'
-          # Isso impede que o erro de "No file matched" aconteça aqui.
+          # REMOVEMOS as linhas de cache. Isso impede o erro "No file matched" no setup.
 
       - name: Build Maven
         run: |
-          # 1. Busca onde o pom.xml real está escondido
+          # 1. Localiza onde o pom.xml do backend realmente está
           POM_PATH=$(find . -name "pom.xml" | grep "backend" | head -n 1)
           APP_DIR=$(dirname "$POM_PATH")
           
           echo "Projeto localizado em: $APP_DIR"
           cd "$APP_DIR"
           
-          # 2. Tenta rodar com o Wrapper, se não der, usa o Maven do sistema
+          # 2. Garante permissão e roda o build
           if [ -f "mvnw" ]; then
             chmod +x mvnw
             ./mvnw clean package -DskipTests
@@ -43,7 +42,7 @@ jobs:
 
       - name: Build e Push imagem Prod
         run: |
-          # Localiza o Dockerfile para definir o contexto
+          # Localiza o Dockerfile para definir o contexto de build
           DOCKER_DIR=$(dirname $(find . -name "Dockerfile" | head -n 1))
           cd "$DOCKER_DIR"
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
