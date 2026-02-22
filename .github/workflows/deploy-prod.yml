@@ -17,8 +17,14 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: 'maven'
-          cache-dependency-path: '**/pom.xml'   # 👈 resolve o erro sem remover o cache
+          # SEM cache aqui — sua estrutura não-padrão quebra o setup-java
+
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
 
       - name: Build Maven
         run: |
@@ -71,8 +77,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
-
             cd ~/reservas-system || { echo "Erro: diretório não encontrado na EC2."; exit 1; }
-
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
             docker image prune -f
