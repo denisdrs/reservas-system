@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-dev
+      - api-prod
+    networks:
+      - projeto-network
+
+  api-dev:
+    image: ${DOCKERHUB_USERNAME}/reservas-api:dev
+    container_name: api-dev
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${RDS_HOST}:5432/reservas_dev
+      SPRING_DATASOURCE_USERNAME: ${RDS_USER}
+      SPRING_DATASOURCE_PASSWORD: ${RDS_PASS}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      JWT_SECRET: ${JWT_SECRET_DEV}
+      SERVER_PORT: 8080
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ${AWS_REGION}
+        awslogs-group: /projeto/dev
+        awslogs-stream: api-dev
+    networks:
+      - projeto-network
+
+  api-prod:
+    image: ${DOCKERHUB_USERNAME}/reservas-api:prod
+    container_name: api-prod
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${RDS_HOST}:5432/reservas_prod
+      SPRING_DATASOURCE_USERNAME: ${RDS_USER}
+      SPRING_DATASOURCE_PASSWORD: ${RDS_PASS}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      JWT_SECRET: ${JWT_SECRET_PROD}
+      SERVER_PORT: 8080
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ${AWS_REGION}
+        awslogs-group: /projeto/prod
+        awslogs-stream: api-prod
+    networks:
+      - projeto-network
+
+networks:
+  projeto-network:
+    driver: bridge
