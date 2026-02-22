@@ -17,11 +17,14 @@ jobs:
           distribution: 'temurin'
 
       - name: Build Maven
-        # Forçamos o diretório exato onde o pom.xml real reside
-        working-directory: backend/reservas-system
+        # Em vez de 'working-directory', entramos na pasta manualmente no script
         run: |
-          # Verificamos se estamos no lugar certo e rodamos o build
+          echo "Buscando o pom.xml do backend..."
+          cd backend/reservas-system || cd reservas-system/backend/reservas-system
+          
+          echo "Pasta atual: $(pwd)"
           ls -la
+          
           chmod +x mvnw
           ./mvnw clean package -DskipTests
 
@@ -32,9 +35,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build e Push imagem Prod
-        # O Dockerfile está em /backend, um nível acima do código-fonte
-        working-directory: backend
         run: |
+          # Navega até onde está o Dockerfile
+          cd backend || cd reservas-system/backend
+          
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
 
