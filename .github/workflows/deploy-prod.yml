@@ -12,12 +12,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Debug - Estrutura do repositório
+        run: |
+          echo "=== pom.xml encontrados ==="
+          find . -name "pom.xml" -not -path '*/.*'
+          echo "=== Dockerfiles encontrados ==="
+          find . -name "Dockerfile" -not -path '*/.*'
+
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          # SEM cache aqui — sua estrutura não-padrão quebra o setup-java
 
       - name: Cache Maven
         uses: actions/cache@v4
@@ -28,10 +34,11 @@ jobs:
 
       - name: Build Maven
         run: |
-          POM_PATH=$(find . -name "pom.xml" | grep "backend" | head -n 1)
+          # Pega o primeiro pom.xml encontrado, sem filtrar por nome de pasta
+          POM_PATH=$(find . -name "pom.xml" -not -path '*/.*' | head -n 1)
 
           if [ -z "$POM_PATH" ]; then
-            echo "Erro: pom.xml não encontrado no diretório backend."
+            echo "Erro: nenhum pom.xml encontrado no repositório."
             exit 1
           fi
 
@@ -55,7 +62,7 @@ jobs:
 
       - name: Build e Push imagem Prod
         run: |
-          DOCKER_PATH=$(find . -name "Dockerfile" | grep "backend" | head -n 1)
+          DOCKER_PATH=$(find . -name "Dockerfile" -not -path '*/.*' | head -n 1)
 
           if [ -z "$DOCKER_PATH" ]; then
             echo "Erro: Dockerfile não encontrado."
