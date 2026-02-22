@@ -9,28 +9,35 @@ jobs:
     steps:
       - name: Checkout do Código
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          # REMOVEMOS as linhas de cache. Isso impede o erro "No file matched" no setup.
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'   # 👈 resolve o erro sem remover o cache
 
       - name: Build Maven
         run: |
-          # 1. Localiza onde o pom.xml do backend realmente está
           POM_PATH=$(find . -name "pom.xml" | grep "backend" | head -n 1)
+
+          if [ -z "$POM_PATH" ]; then
+            echo "Erro: pom.xml não encontrado no diretório backend."
+            exit 1
+          fi
+
           APP_DIR=$(dirname "$POM_PATH")
-          
           echo "Projeto localizado em: $APP_DIR"
           cd "$APP_DIR"
-          
-          # 2. Garante permissão e roda o build
+
           if [ -f "mvnw" ]; then
             chmod +x mvnw
             ./mvnw clean package -DskipTests
           else
+            echo "mvnw não encontrado, usando mvn do runner."
             mvn clean package -DskipTests
           fi
 
@@ -42,9 +49,17 @@ jobs:
 
       - name: Build e Push imagem Prod
         run: |
-          # Localiza o Dockerfile para definir o contexto de build
-          DOCKER_DIR=$(dirname $(find . -name "Dockerfile" | head -n 1))
+          DOCKER_PATH=$(find . -name "Dockerfile" | grep "backend" | head -n 1)
+
+          if [ -z "$DOCKER_PATH" ]; then
+            echo "Erro: Dockerfile não encontrado."
+            exit 1
+          fi
+
+          DOCKER_DIR=$(dirname "$DOCKER_PATH")
+          echo "Dockerfile localizado em: $DOCKER_DIR"
           cd "$DOCKER_DIR"
+
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
 
@@ -56,6 +71,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
-            cd ~/reservas-system || cd ~/projeto
+
+            cd ~/reservas-system || { echo "Erro: diretório não encontrado na EC2."; exit 1; }
+
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
             docker image prune -f
