@@ -16,17 +16,22 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build Maven
-        # Em vez de 'working-directory', entramos na pasta manualmente no script
+      - name: Build Maven (Busca Dinâmica)
         run: |
-          echo "Buscando o pom.xml do backend..."
-          cd backend/reservas-system || cd reservas-system/backend/reservas-system
+          # 1. Encontra onde está o pom.xml do projeto real
+          POM_FILE=$(find . -name "pom.xml" -not -path "*/target/*" | head -n 1)
+          PROJECT_DIR=$(dirname "$POM_FILE")
           
-          echo "Pasta atual: $(pwd)"
-          ls -la
+          echo "Projeto localizado em: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
           
-          chmod +x mvnw
-          ./mvnw clean package -DskipTests
+          # 2. Executa o build usando o Wrapper ou Maven do sistema
+          if [ -f "mvnw" ]; then
+            chmod +x mvnw
+            ./mvnw clean package -DskipTests
+          else
+            mvn clean package -DskipTests
+          fi
 
       - name: Login Docker Hub
         uses: docker/login-action@v3
@@ -36,8 +41,12 @@ jobs:
 
       - name: Build e Push imagem Prod
         run: |
-          # Navega até onde está o Dockerfile
-          cd backend || cd reservas-system/backend
+          # 1. Localiza o Dockerfile para definir o contexto correto
+          DOCKER_FILE=$(find . -name "Dockerfile" | head -n 1)
+          DOCKER_DIR=$(dirname "$DOCKER_FILE")
+          
+          echo "Dockerfile localizado em: $DOCKER_DIR"
+          cd "$DOCKER_DIR"
           
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
@@ -50,6 +59,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
-            cd ~/reservas-system
+            # Tenta entrar na pasta do projeto na EC2
+            cd ~/reservas-system || cd ~/projeto || exit 1
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
             docker image prune -f
