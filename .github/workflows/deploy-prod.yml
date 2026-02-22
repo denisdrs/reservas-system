@@ -9,30 +9,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Garante que todo o histórico e subpastas sejam baixados
 
-      - name: Debug - Listar tudo
-        run: |
-          echo "Verificando estrutura de pastas completa:"
-          find . -maxdepth 4 -not -path '*/.*'
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
       - name: Build Maven
+        # Forçamos o diretório exato onde o pom.xml real reside
+        working-directory: backend/reservas-system
         run: |
-          # Localiza o diretório que contém o pom.xml do backend
-          POM_PATH=$(find . -name "pom.xml" | grep "backend" | head -n 1)
-          APP_DIR=$(dirname "$POM_PATH")
-          
-          echo "Diretório do projeto encontrado: $APP_DIR"
-          cd "$APP_DIR"
-          
-          # Se o mvnw não existir, usamos o maven instalado no runner
-          if [ -f "mvnw" ]; then
-            chmod +x mvnw
-            ./mvnw clean package -DskipTests
-          else
-            mvn clean package -DskipTests
-          fi
+          # Verificamos se estamos no lugar certo e rodamos o build
+          ls -la
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
 
       - name: Login Docker Hub
         uses: docker/login-action@v3
@@ -41,12 +32,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build e Push imagem Prod
+        # O Dockerfile está em /backend, um nível acima do código-fonte
+        working-directory: backend
         run: |
-          # Busca onde está o Dockerfile para definir o contexto
-          DOCKER_PATH=$(find . -name "Dockerfile" | head -n 1)
-          DOCKER_DIR=$(dirname "$DOCKER_PATH")
-          
-          cd "$DOCKER_DIR"
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
 
@@ -58,7 +46,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
-            # Ajuste o CD para a pasta onde reside o docker-compose na sua EC2
-            cd ~/reservas-system || cd ~/projeto
+            cd ~/reservas-system
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
             docker image prune -f
