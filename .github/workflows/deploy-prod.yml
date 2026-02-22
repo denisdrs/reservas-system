@@ -16,16 +16,16 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build Maven (Busca Dinâmica)
+      - name: Build Maven (Localização Dinâmica)
         run: |
-          # 1. Encontra onde está o pom.xml do projeto real
+          # 1. Localiza onde está o pom.xml do projeto real (evitando pastas de target)
           POM_FILE=$(find . -name "pom.xml" -not -path "*/target/*" | head -n 1)
           PROJECT_DIR=$(dirname "$POM_FILE")
           
           echo "Projeto localizado em: $PROJECT_DIR"
           cd "$PROJECT_DIR"
           
-          # 2. Executa o build usando o Wrapper ou Maven do sistema
+          # 2. Executa o build usando o Wrapper (se existir) ou o Maven do sistema
           if [ -f "mvnw" ]; then
             chmod +x mvnw
             ./mvnw clean package -DskipTests
@@ -59,7 +59,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
-            # Tenta entrar na pasta do projeto na EC2
+            # Tenta entrar na pasta do projeto na EC2 (com fallback)
             cd ~/reservas-system || cd ~/projeto || exit 1
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
             docker image prune -f
