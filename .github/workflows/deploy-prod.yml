@@ -7,7 +7,7 @@ jobs:
   deploy-prod:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout do Código
         uses: actions/checkout@v4
 
       - name: Setup Java 21
@@ -15,17 +15,19 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          # REMOVEMOS as linhas 'cache: maven' e 'cache-dependency-path'
+          # Isso impede que o erro de "No file matched" aconteça aqui.
 
-      - name: Build Maven (Localização Dinâmica)
+      - name: Build Maven
         run: |
-          # 1. Localiza onde está o pom.xml do projeto real (evitando pastas de target)
-          POM_FILE=$(find . -name "pom.xml" -not -path "*/target/*" | head -n 1)
-          PROJECT_DIR=$(dirname "$POM_FILE")
+          # 1. Busca onde o pom.xml real está escondido
+          POM_PATH=$(find . -name "pom.xml" | grep "backend" | head -n 1)
+          APP_DIR=$(dirname "$POM_PATH")
           
-          echo "Projeto localizado em: $PROJECT_DIR"
-          cd "$PROJECT_DIR"
+          echo "Projeto localizado em: $APP_DIR"
+          cd "$APP_DIR"
           
-          # 2. Executa o build usando o Wrapper (se existir) ou o Maven do sistema
+          # 2. Tenta rodar com o Wrapper, se não der, usa o Maven do sistema
           if [ -f "mvnw" ]; then
             chmod +x mvnw
             ./mvnw clean package -DskipTests
@@ -41,13 +43,9 @@ jobs:
 
       - name: Build e Push imagem Prod
         run: |
-          # 1. Localiza o Dockerfile para definir o contexto correto
-          DOCKER_FILE=$(find . -name "Dockerfile" | head -n 1)
-          DOCKER_DIR=$(dirname "$DOCKER_FILE")
-          
-          echo "Dockerfile localizado em: $DOCKER_DIR"
+          # Localiza o Dockerfile para definir o contexto
+          DOCKER_DIR=$(dirname $(find . -name "Dockerfile" | head -n 1))
           cd "$DOCKER_DIR"
-          
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
 
@@ -59,7 +57,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
-            # Tenta entrar na pasta do projeto na EC2 (com fallback)
-            cd ~/reservas-system || cd ~/projeto || exit 1
+            cd ~/reservas-system || cd ~/projeto
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
             docker image prune -f
