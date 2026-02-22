@@ -15,11 +15,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          # Removido o cache ou configurado para o caminho correto
           cache: maven
-          cache-dependency-path: backend/reservas-system/pom.xml
+          # O padrão '**' busca o pom.xml em qualquer subpasta, evitando o erro de 'No file matched'
+          cache-dependency-path: '**/pom.xml'
 
       - name: Build Maven
+        # Ajustado para a pasta onde o projeto Java realmente reside
         working-directory: backend/reservas-system
         run: |
           chmod +x mvnw
@@ -32,9 +33,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build e Push imagem Prod
+        # O contexto do docker build permanece em /backend para encontrar o Dockerfile
         working-directory: backend
         run: |
-          # O contexto do docker build permanece em /backend, onde está o Dockerfile
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
 
@@ -45,8 +46,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Atualiza a imagem e reinicia apenas o container da API
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
-            # Certifique-se de que a pasta na EC2 é realmente ~/projeto
-            cd ~/reservas-system 
+            cd ~/reservas-system
             docker compose -f infra/docker-compose.yml up -d --no-deps api-prod
             docker image prune -f
