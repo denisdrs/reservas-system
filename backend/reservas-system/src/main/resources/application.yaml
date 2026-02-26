@@ -10,7 +10,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false #TODO: Update this when need to see logs
     properties:
       hibernate:
         format_sql: true
