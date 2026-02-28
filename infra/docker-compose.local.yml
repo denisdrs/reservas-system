@@ -14,7 +14,7 @@ services:
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: senha123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      JWT_SECRET: local_jwt_secret_dev
+      JWT_SECRET: sua_chave_secreta_com_pelo_menos_32_caracteres
       SERVER_PORT: 8080
     depends_on:
       postgres-local:

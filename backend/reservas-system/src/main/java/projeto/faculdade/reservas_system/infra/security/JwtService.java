@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import projeto.faculdade.reservas_system.infra.configuration.JwtConfig;
 
@@ -18,11 +20,13 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JwtService {
 
     private final JwtConfig jwtConfig;
-
+    //TODO: Username == email
     public String generateToken(String username) {
+        log.info("Generating token for user: {}", username);
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, username);
     }
@@ -40,13 +44,13 @@ public class JwtService {
                 .compact();
     }
 
-    public Boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
-    }
-
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        String username = extractClaim(token, Claims::getSubject);
+        log.info("Checking if the token has not yet expired for the user {}",username);
+        if(!isTokenExpired(token)) {
+            return username;
+        }
+        throw new BadCredentialsException("Token expired");
     }
 
     private Date extractExpiration(String token) {
