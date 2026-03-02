@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import projeto.faculdade.reservas_system.application.user.exception.EmailAlreadyUsedException;
+import projeto.faculdade.reservas_system.application.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,5 +33,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> badCredentialsExceptionHandler(BadCredentialsException exc) {
         DefaultExceptionResponse response = new DefaultExceptionResponse(LocalDateTime.now(), 401, exc.getMessage());
         return ResponseEntity.status(401).body(response);
+    }
+    @ExceptionHandler({UserNotFoundException.class})
+    public ResponseEntity<?> notFoundExceptionHandler(RuntimeException exc) {
+        DefaultExceptionResponse response = new DefaultExceptionResponse(LocalDateTime.now(), 404, exc.getMessage());
+        return ResponseEntity.status(404).body(response);
     }
 }
