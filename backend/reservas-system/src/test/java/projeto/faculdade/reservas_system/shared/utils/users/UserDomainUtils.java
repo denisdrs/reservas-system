@@ -3,6 +3,7 @@ package projeto.faculdade.reservas_system.shared.utils.users;
 import projeto.faculdade.reservas_system.application.user.domain.Address;
 import projeto.faculdade.reservas_system.application.user.domain.User;
 import projeto.faculdade.reservas_system.application.user.usecase.contract.RegisterUserInput;
+import projeto.faculdade.reservas_system.application.user.usecase.contract.UpdateUserInput;
 
 public class UserDomainUtils {
 
@@ -12,6 +13,15 @@ public class UserDomainUtils {
                 "Joao",
                 "joao.test@example.com",
                 "password123",
+                address
+        );
+    }
+
+    public static UpdateUserInput createValidUpdateUserInput() {
+        UpdateUserInput.AddressInput address = new UpdateUserInput.AddressInput("Rua Nova", 321L, "Cidade Nova", "Estado Novo");
+        return new UpdateUserInput(
+                "Joao Novo",
+                "newPassword123",
                 address
         );
     }
