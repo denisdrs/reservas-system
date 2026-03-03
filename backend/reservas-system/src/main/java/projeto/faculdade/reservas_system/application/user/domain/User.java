@@ -29,11 +29,14 @@ public class User implements UserDetails {
     private String password;
 
     @Embedded
+    private Role role;
+
+    @Embedded
     private Address address;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(); //TODO: Update this when roles exists
+        return List.of(role);
     }
 
     @Override
