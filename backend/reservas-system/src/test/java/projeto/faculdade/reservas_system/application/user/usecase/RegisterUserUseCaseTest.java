@@ -5,7 +5,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import projeto.faculdade.reservas_system.application.user.domain.Address;
 import projeto.faculdade.reservas_system.application.user.domain.User;
 import projeto.faculdade.reservas_system.application.user.exception.EmailAlreadyUsedException;
 import projeto.faculdade.reservas_system.application.user.port.UserRepository;
@@ -19,8 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @MockitoSettings
 public class RegisterUserUseCaseTest {
@@ -46,6 +44,7 @@ public class RegisterUserUseCaseTest {
         doNothing().when(userRepository).save(any(User.class));
 
         registerUserUseCase.execute(UserDomainUtils.createValidRegisterUserInput());
+        verify(userRepository).save(UserDomainUtils.createValidUser());
     }
 
     @Test
