@@ -33,7 +33,7 @@ public class JwtService {
 
     private String createToken(Map<String, Object> claims, String subject) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationTime = now.plusSeconds(jwtConfig.getExpiration());
+        LocalDateTime expirationTime = now.plusHours(jwtConfig.getExpiration());
 
         return Jwts.builder()
                 .claims(claims)
