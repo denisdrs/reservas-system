@@ -6,6 +6,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import projeto.faculdade.reservas_system.application.order.exception.StockException;
+import projeto.faculdade.reservas_system.application.product.exception.ProductNotFoundException;
 import projeto.faculdade.reservas_system.application.user.exception.EmailAlreadyUsedException;
 import projeto.faculdade.reservas_system.application.user.exception.UserNotFoundException;
 
@@ -34,9 +36,15 @@ public class GlobalExceptionHandler {
         DefaultExceptionResponse response = new DefaultExceptionResponse(LocalDateTime.now(), 401, exc.getMessage());
         return ResponseEntity.status(401).body(response);
     }
-    @ExceptionHandler({UserNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, ProductNotFoundException.class})
     public ResponseEntity<?> notFoundExceptionHandler(RuntimeException exc) {
         DefaultExceptionResponse response = new DefaultExceptionResponse(LocalDateTime.now(), 404, exc.getMessage());
         return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler({StockException.class})
+    public ResponseEntity<?> unprocessableEntityHandler(RuntimeException exc) {
+        DefaultExceptionResponse response = new DefaultExceptionResponse(LocalDateTime.now(), 422, exc.getMessage());
+        return ResponseEntity.status(422).body(response);
     }
 }
