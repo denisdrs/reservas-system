@@ -29,6 +29,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers(HttpMethod.POST, "/api/users").permitAll();
                     authorize.requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll();
+                    authorize.requestMatchers(HttpMethod.GET,"/api/products").permitAll();
                     authorize.requestMatchers(HttpMethod.POST,"/api/products").hasAuthority("ADMIN");
                     authorize.anyRequest().authenticated();
                 })

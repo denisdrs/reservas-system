@@ -7,7 +7,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import projeto.faculdade.reservas_system.application.product.domain.Product;
 import projeto.faculdade.reservas_system.application.product.port.ProductRepository;
 import projeto.faculdade.reservas_system.application.product.usecase.contract.RegisterProductInput;
-import projeto.faculdade.reservas_system.application.product.usecase.mapper.RegisterProductMapper;
+import projeto.faculdade.reservas_system.application.product.usecase.mapper.ProductUseCaseMapper;
 import projeto.faculdade.reservas_system.shared.utils.products.ProductDomainUtils;
 import projeto.faculdade.reservas_system.shared.utils.users.UserDomainUtils;
 
@@ -21,7 +21,7 @@ public class RegisterProductUseCaseTest {
     private ProductRepository productRepository;
 
     @Mock
-    private RegisterProductMapper mapper;
+    private ProductUseCaseMapper mapper;
 
     @InjectMocks
     private RegisterProductUseCase registerProductUseCase;
