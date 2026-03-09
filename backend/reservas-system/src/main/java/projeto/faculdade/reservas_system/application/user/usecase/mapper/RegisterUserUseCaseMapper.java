@@ -9,5 +9,6 @@ import projeto.faculdade.reservas_system.application.user.usecase.contract.Regis
 public interface RegisterUserUseCaseMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", ignore = true)
     User toUser(RegisterUserInput input);
 }
