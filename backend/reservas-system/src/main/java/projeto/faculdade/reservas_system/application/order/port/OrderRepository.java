@@ -15,4 +15,6 @@ public interface OrderRepository {
     void deleteOrder(Order order);
 
     List<Order> findAllByUser(User user);
+
+    List<Order> findByUserId(String userId);
 }
