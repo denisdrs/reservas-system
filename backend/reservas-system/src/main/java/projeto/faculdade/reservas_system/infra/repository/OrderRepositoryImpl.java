@@ -40,8 +40,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Order> findAllByUser(User user) {
         log.info("Finding all orders for user: {}", user.getEmail());
-        return dao.findAll().stream()
-                .filter(order -> order.getUser().getEmail().equalsIgnoreCase(user.getEmail()))
-                .toList();
+        return dao.findByUserId(user.getId());
+    }
+
+    @Override
+    public List<Order> findByUserId(String userId) {
+        log.info("Finding all orders for user id: {}", userId);
+        return dao.findByUserId(userId);
     }
 }
