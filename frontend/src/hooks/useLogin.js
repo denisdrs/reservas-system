@@ -18,8 +18,28 @@ export const useLogin = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     console.log('Dados do Login:', data);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsLoading(false);
+
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result = await response.json();
+      localStorage.setItem("token", result.token);
+      console.log('Login successful:', result);
+    } catch (error) {
+      console.error('There was a problem with the login request:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
