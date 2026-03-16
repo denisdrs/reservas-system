@@ -7,6 +7,9 @@ on:
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,13 +43,10 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           script: |
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:dev
+            docker pull $DOCKERHUB_USERNAME/reservas-api:dev
             cd ~/projeto
             docker compose up -d --no-deps api-dev
             docker image prune -f
-          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
