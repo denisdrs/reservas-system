@@ -9,10 +9,12 @@ const LoginForm = () => {
     register,
     handleSubmit,
     errors,
+    message
   } = useLogin();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {message && <p className='text-red-500'>{message}</p>}
       <div className="space-y-1">
         <div className={`relative flex items-center rounded-md border bg-white transition-all ${errors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500'}`}>
           <div className="flex items-center pl-3 text-gray-800">

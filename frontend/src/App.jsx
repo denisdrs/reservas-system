@@ -3,6 +3,17 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 function App() {
+  //Usar esse protectedRoute quando tivermos rotas que só podem ser acessadas se tiver logado 
+  const ProtectedRoute = ({redirectPath = '/login' }) => {
+  const token = localStorage.getItem('token');
+  
+  if (token === null) {
+    return <Navigate to={redirectPath} replace />;
+  }
+
+  return <Outlet />;
+};
+
   return (
     <BrowserRouter>
       <Routes>
