@@ -7,6 +7,9 @@ on:
 jobs:
   deploy-prod:
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,10 +48,7 @@ jobs:
           envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           script: |
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
+            docker pull $DOCKERHUB_USERNAME/reservas-api:prod
             cd ~/projeto
             docker compose up -d --no-deps api-prod
             docker image prune -f
-                    env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
