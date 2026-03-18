@@ -7,5 +7,5 @@ import java.math.BigDecimal;
 
 @Builder
 @With
-public record RegisterProductInput(String name, BigDecimal value, Long quantity) {
+public record RegisterProductInput(String name, BigDecimal value, Long quantity, String url) {
 }
