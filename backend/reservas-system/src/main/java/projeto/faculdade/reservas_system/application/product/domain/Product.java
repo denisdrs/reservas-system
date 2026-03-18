@@ -27,6 +27,8 @@ public class Product {
 
     private Long quantity;
 
+    private String url;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
