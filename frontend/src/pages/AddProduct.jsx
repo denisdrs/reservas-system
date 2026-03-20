@@ -20,7 +20,6 @@ const AddProduct = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
 
-    // AJUSTE: O Java do seu colega espera "value" e "quantity"
     const produtoParaEnviar = {
       name: formData.name,
       value: formData.price.replace(',', '.'), 

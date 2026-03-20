@@ -1,22 +1,34 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Login from './pages/Login'; 
 import Register from './pages/Register'; 
 import Orders from './pages/Orders'; 
 import Checkout from './pages/Checkout';
 import AddProduct from './pages/AddProduct';
 
+// Função de Proteção: Só entra se tiver Token
+const ProtectedRoute = () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return <Outlet />;
+};
+
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Rota raiz e rota de login agora levam para o mesmo lugar corretamente */}
+        {/* Rotas Públicas (Qualquer um vê) */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
-        
         <Route path="/register" element={<Register />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/add-product" element={<AddProduct />} />
+
+        {/* Rotas Protegidas (Só quem logou vê) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/add-product" element={<AddProduct />} />
+        </Route>
       </Routes>
     </Router>
   );
