@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(response);
     }
 
-    @ExceptionHandler({StockException.class})
+    @ExceptionHandler({StockException.class,IllegalArgumentException.class})
     public ResponseEntity<?> unprocessableEntityHandler(RuntimeException exc) {
         DefaultExceptionResponse response = new DefaultExceptionResponse(LocalDateTime.now(), 422, exc.getMessage());
         return ResponseEntity.status(422).body(response);
