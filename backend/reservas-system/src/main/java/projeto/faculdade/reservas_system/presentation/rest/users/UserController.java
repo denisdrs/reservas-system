@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import projeto.faculdade.reservas_system.application.shared.contract.DefaultMessage;
 import projeto.faculdade.reservas_system.application.user.domain.User;
+import projeto.faculdade.reservas_system.application.user.usecase.DeleteUserUseCase;
 import projeto.faculdade.reservas_system.application.user.usecase.RegisterUserUseCase;
 import projeto.faculdade.reservas_system.application.user.usecase.UpdateUserUseCase;
 import projeto.faculdade.reservas_system.presentation.rest.users.contract.RegisterUserRequest;
@@ -24,6 +26,8 @@ public class UserController {
 
     private final UpdateUserUseCase updateUserUseCase;
 
+    private final DeleteUserUseCase deleteUserUseCase;
+
     private final UserControllerMapper mapper;
 
     @PostMapping
@@ -37,5 +41,10 @@ public class UserController {
         updateUserUseCase.execute(user.getId(), mapper.toUpdateUserInput(request));
         UpdateUserResponse response = UpdateUserResponse.builder().message("User updated successfully").build();
         return ResponseEntity.ok().body(response);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<DefaultMessage<User>> delete(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(deleteUserUseCase.execute(user));
     }
 }
