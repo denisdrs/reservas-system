@@ -1,27 +1,33 @@
+import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form'; // Precisamos importar isso aqui
 import { useLogin } from '../hooks/useLogin';
 
 const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const { handleLogin, isLoading, message } = useLogin(); // Pegando só o que o nosso hook realmente tem
+  
   const {
-    showPassword,
-    setShowPassword,
-    isLoading,
     register,
     handleSubmit,
-    errors,
-    message
-  } = useLogin();
+    formState: { errors },
+  } = useForm(); // O formulário agora é controlado aqui dentro
+
+  const onSubmit = (data) => {
+    handleLogin(data); // Passa os dados para a nossa função de login
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {message && <p className='text-red-500'>{message}</p>}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {message && <p className='text-red-500 text-sm text-center'>{message}</p>}
+      
       <div className="space-y-1">
         <div className={`relative flex items-center rounded-md border bg-white transition-all ${errors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500'}`}>
           <div className="flex items-center pl-3 text-gray-800">
             <Mail size={20} />
           </div>
           <input
-            {...register('email')}
+            {...register('email', { required: "E-mail é obrigatório" })}
             type="email"
             placeholder="email@gmail.com"
             className="w-full bg-transparent px-3 py-3 text-sm outline-none placeholder:text-gray-400"
@@ -38,7 +44,7 @@ const LoginForm = () => {
             <Lock size={20} />
           </div>
           <input
-            {...register('password')}
+            {...register('password', { required: "Senha é obrigatória" })}
             type={showPassword ? 'text' : 'password'}
             placeholder="********"
             className="w-full bg-transparent px-3 py-3 text-sm outline-none placeholder:text-gray-400"
