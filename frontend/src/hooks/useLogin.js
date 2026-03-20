@@ -20,23 +20,31 @@ export const useLogin = () => {
     console.log('Dados do Login:', data);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch('http://3.213.13.51/dev/api/auth/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Aqui está o segredo: Pegamos exatamente o campo "token" que vimos no Insomnia
+        // E removemos a palavra "Bearer " se ela vier junto, para deixar só o código
+        const tokenLimpo = result.token.replace('Bearer ', '');
+        
+        localStorage.setItem('token', tokenLimpo);
+        
+        alert("Login realizado com sucesso! Redirecionando para o cadastro...");
+        window.location.href = '/add-product'; 
+      } else {
+        alert("E-mail ou senha incorretos.");
       }
-
-      const result = await response.json();
-      localStorage.setItem("token", result.token);
-      console.log('Login successful:', result);
     } catch (error) {
-      console.error('There was a problem with the login request:', error);
+      console.error('Erro na requisição de login:', error);
+      alert("Erro ao conectar com o servidor.");
     } finally {
       setIsLoading(false);
     }

@@ -1,21 +1,24 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './pages/Login'; 
+import Register from './pages/Register'; 
+import Orders from './pages/Orders'; 
+import Checkout from './pages/Checkout';
+import AddProduct from './pages/AddProduct';
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        {/* Rota para o Login */}
+        {/* Rota raiz e rota de login agora levam para o mesmo lugar corretamente */}
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         
-        {/* Rota para o seu novo Cadastro */}
         <Route path="/register" element={<Register />} />
-
-        {/* Redireciona qualquer caminho vazio para o login por padrão */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/add-product" element={<AddProduct />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
