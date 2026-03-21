@@ -11,7 +11,7 @@ export const useLogin = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://3.213.13.51/dev/api/auth/login', {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json' 
@@ -26,7 +26,7 @@ export const useLogin = () => {
         
         console.log('Login bem-sucedido:', result);
         setMessage("Login efetuado com sucesso!");
-        navigate('/add-product'); 
+        navigate('/orders'); 
       } else {
         setMessage("Email ou senha incorretos.");
       }

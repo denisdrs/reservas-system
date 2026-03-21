@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react';
+import { useCart } from '../contexts/CartContext.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const Orders = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
+  const handleAddToCart = (produto) => {
+    addToCart(produto);
+    navigate('/checkout');
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://3.213.13.51/dev/api/products');
+        const response = await fetch('http://localhost:8080/api/products');
         const data = await response.json();
         
         if (response.ok) {
@@ -65,7 +74,7 @@ const Orders = () => {
                       R$ {parseFloat(produto.value || 0).toFixed(2).replace('.', ',')}
                     </span>
                   </div>
-                  <button className="bg-gray-900 text-white p-3 px-6 rounded-2xl font-bold hover:bg-orange-600 transition">
+                  <button onClick={() => handleAddToCart(produto)} className="bg-gray-900 text-white p-3 px-6 rounded-2xl font-bold hover:bg-orange-600 transition">
                     Adicionar
                   </button>
                 </div>

@@ -1,17 +1,45 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useCart } from '../contexts/CartContext.jsx';
 
 const Checkout = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  
-  // Aqui pegamos a "bagagem" de dados que veio da página de Orders
-  const { cart, total } = location.state || { cart: [], total: 0 };
+  const { cart, getCartTotal, getCartForApi } = useCart();
+  const cartTotal = getCartTotal();
 
   const [payment, setPayment] = useState('Cartão');
   const [isFinished, setIsFinished] = useState(false);
 
-  // Se a pessoa tentar entrar direto no checkout sem comprar nada, mandamos de volta
+  const navigateToOrders = () => {
+    navigate('/orders');
+  };
+
+
+  const handleCheckout = async () => {
+    const products = getCartForApi();
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch('http://localhost:8080/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ products }),
+      });
+
+      if (response.ok) {
+        setIsFinished(true);
+      } else {
+        // Handle error
+        console.error("Erro ao finalizar o pedido");
+      }
+    } catch (error) {
+      console.error("Erro de conexão:", error);
+    }
+  };
+
   if (cart.length === 0 && !isFinished) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-10 font-sans">
@@ -21,7 +49,6 @@ const Checkout = () => {
     );
   }
 
-  // Se ela clicar no botão final, mostramos a tela de sucesso
   if (isFinished) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center font-sans">
@@ -43,36 +70,33 @@ const Checkout = () => {
       <div className="max-w-2xl mx-auto bg-white rounded-[40px] p-10 shadow-sm border border-gray-100">
         <h1 className="text-4xl font-black text-gray-800 mb-10 tracking-tighter italic text-left">Resumo do Pedido</h1>
 
-        {/* 1. Lista de Itens */}
         <section className="mb-10 text-left">
           <h2 className="text-[10px] font-black text-gray-300 uppercase tracking-[3px] mb-6">Itens Escolhidos</h2>
           <div className="space-y-4">
             {cart.map((item, index) => (
               <div key={index} className="flex justify-between items-center">
                 <span className="text-gray-600 font-bold">{item.name}</span>
-                <span className="text-gray-900 font-black">R${item.price.toFixed(2)}</span>
+                <span className="text-gray-900 font-black">R$ {parseFloat(item.value || 0).toFixed(2).replace('.', ',')}</span>
               </div>
             ))}
             <div className="border-t-2 border-dashed border-gray-100 mt-6 pt-6 flex justify-between">
               <span className="text-2xl font-black text-gray-800">Total</span>
-              <span className="text-2xl font-black text-orange-500">R${total.toFixed(2)}</span>
+              <span className="text-2xl font-black text-orange-500">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
             </div>
           </div>
         </section>
 
-        {/* 2. Endereço */}
         <section className="mb-10 text-left">
           <h2 className="text-[10px] font-black text-gray-300 uppercase tracking-[3px] mb-4">Endereço de Entrega</h2>
           <div className="p-5 border-2 border-orange-100 rounded-[25px] bg-orange-50/50 flex items-center gap-4">
             <span className="text-2xl">📍</span>
             <div>
-              <p className="font-black text-gray-800 text-sm">Rua 01, 0011, Fortaleza</p>
+              <p className="font-black text-gray-800 text-sm">ATUALIZAR ESSE VALOR PARA SER PEGO DA API</p>
               <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mt-1">Endereço de Cadastro</p>
             </div>
           </div>
         </section>
 
-        {/* 3. Forma de Pagamento */}
         <section className="mb-12 text-left">
           <h2 className="text-[10px] font-black text-gray-300 uppercase tracking-[3px] mb-4">Pagamento</h2>
           <div className="grid grid-cols-3 gap-3">
@@ -92,12 +116,16 @@ const Checkout = () => {
           </div>
         </section>
 
-        {/* Botão de Ação Final */}
         <button 
-          onClick={() => setIsFinished(true)}
+          onClick={handleCheckout}
           className="w-full bg-orange-500 text-white py-5 rounded-[25px] font-black text-lg shadow-2xl shadow-orange-200 hover:bg-orange-600 hover:-translate-y-1 transition-all uppercase tracking-tighter"
         >
           Confirmar e Pagar
+        </button>
+        <button 
+        className="mt-8 bg-orange-500 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-orange-200"
+        onClick={navigateToOrders}>
+            Retornar ao cardapio
         </button>
       </div>
     </div>
