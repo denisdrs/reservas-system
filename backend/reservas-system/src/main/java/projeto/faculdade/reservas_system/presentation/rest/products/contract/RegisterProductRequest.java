@@ -11,5 +11,6 @@ import java.math.BigDecimal;
 public record RegisterProductRequest(
         @NotBlank(message = "Name não pode ser vazio") String name,
         @NotNull(message = "Value não pode ser null") @Positive BigDecimal value,
-        @NotNull(message = "Quantity não pode ser null") @Positive Long quantity) {
+        @NotNull(message = "Quantity não pode ser null") @Positive Long quantity,
+        @NotBlank(message = "Url não pode ser vazio") String url) {
 }
