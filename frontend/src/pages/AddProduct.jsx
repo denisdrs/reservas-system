@@ -30,7 +30,7 @@ const AddProduct = () => {
     };
 
     try {
-      const response = await fetch('http://3.213.13.51/dev/api/products', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

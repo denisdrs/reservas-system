@@ -8,7 +8,7 @@ const History = () => {
     const fetchOrders = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:8080/api/orders', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
