@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from '../contexts/CartContext.jsx';
 
 const Checkout = () => {
@@ -10,10 +10,39 @@ const Checkout = () => {
   const [payment, setPayment] = useState('Cartão');
   const [isFinished, setIsFinished] = useState(false);
 
+  const [address, setAddress] = useState('');
+
+  useEffect(() => {
+    handleAddress();
+  }, []);
+
   const navigateToOrders = () => {
     navigate('/orders');
   };
 
+  const handleAddress = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAddress(`${data.address.street}, ${data.address.number} - ${data.address.city}, ${data.address.state}`);
+      } else {
+        // Handle error
+        console.error('Erro ao buscar dados de usuario!');
+      }
+    } catch (error) {
+      console.error('Erro de conexão:', error);
+    }
+  };
 
   const handleCheckout = async () => {
     const products = getCartForApi();
@@ -91,14 +120,14 @@ const Checkout = () => {
           <div className="p-5 border-2 border-orange-100 rounded-[25px] bg-orange-50/50 flex items-center gap-4">
             <span className="text-2xl">📍</span>
             <div>
-              <p className="font-black text-gray-800 text-sm">ATUALIZAR ESSE VALOR PARA SER PEGO DA API</p>
+              <p className="font-black text-gray-800 text-sm">{address}</p>
               <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mt-1">Endereço de Cadastro</p>
             </div>
           </div>
         </section>
 
         <section className="mb-12 text-left">
-          <h2 className="text-[10px] font-black text-gray-300 uppercase tracking-[3px] mb-4">Pagamento</h2>
+          <h2 className="text-[10px] font-black text-gray-300 uppercase tracking-[3px] mb-4">Pagamento (Somente na entrega)</h2>
           <div className="grid grid-cols-3 gap-3">
             {['Cartão', 'Pix', 'Dinheiro'].map((method) => (
               <button
