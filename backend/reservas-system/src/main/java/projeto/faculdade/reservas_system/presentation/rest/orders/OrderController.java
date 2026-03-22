@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import projeto.faculdade.reservas_system.application.order.domain.Order;
+import projeto.faculdade.reservas_system.application.order.usecase.FindAllOrders;
 import projeto.faculdade.reservas_system.application.order.usecase.FindAllOrdersByUser;
 import projeto.faculdade.reservas_system.application.order.usecase.RegisterNewOrderUseCase;
 import projeto.faculdade.reservas_system.application.order.usecase.UpdateOrderStatusUseCase;
@@ -29,6 +30,8 @@ public class OrderController {
 
     private final UpdateOrderStatusUseCase updateOrderStatusUseCase;
 
+    private final FindAllOrders findAllOrders;
+
     private final OrderControllerMapper mapper;
 
     @PostMapping
@@ -38,12 +41,17 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderOutput>> findAll(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<OrderOutput>> findAllByUser(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(findAllOrdersByUser.execute(user));
     }
 
     @PutMapping("/{orderId}/{status}")
     public ResponseEntity<DefaultMessage<Order>> updateStatus(@PathVariable String orderId, @PathVariable String status) {
         return ResponseEntity.ok(updateOrderStatusUseCase.execute(orderId,status));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderOutput>> findAll(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(findAllOrders.execute());
     }
 }

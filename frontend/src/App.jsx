@@ -6,39 +6,62 @@ import Checkout from './pages/Checkout';
 import AddProduct from './pages/AddProduct';
 import History from './pages/History';
 import Navbar from './components/Navbar';
+import AllOrders from './pages/AllOrders';
 
-// Layout para rotas protegidas
-const ProtectedLayout = () => (
+// Layout para rotas de usuário
+const UserLayout = () => (
   <div>
     <Navbar />
     <Outlet />
   </div>
 );
 
-// Função de Proteção: Só entra se tiver Token
+// Layout para rotas de admin
+const AdminLayout = () => (
+  <div>
+    <Navbar />
+    <Outlet />
+  </div>
+);
+
+// Rota protegida para usuários logados
 const ProtectedRoute = () => {
   const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  return token ? <UserLayout /> : <Navigate to="/login" replace />;
+};
+
+// Rota protegida para admins
+const AdminRoute = () => {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  
+  if (!token || role !== 'ADMIN') {
+    return <Navigate to="/orders" replace />;
   }
-  return <ProtectedLayout />;
+  
+  return <AdminLayout />;
 };
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Rotas Públicas (Qualquer um vê) */}
+        {/* Rotas Públicas */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Rotas Protegidas (Só quem logou vê) */}
+        {/* Rotas de Usuário */}
         <Route element={<ProtectedRoute />}>
           <Route path="/orders" element={<Orders />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/add-product" element={<AddProduct />} />
           <Route path="/history" element={<History />} />
+        </Route>
+        
+        {/* Rotas de Admin */}
+        <Route element={<AdminRoute />}>
+          <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/all-orders" element={<AllOrders />} />
         </Route>
       </Routes>
     </Router>

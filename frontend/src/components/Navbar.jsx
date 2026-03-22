@@ -1,14 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { ShoppingCart, User, History, LogOut, PlusCircle } from 'lucide-react';
+import { ShoppingCart, User, History, LogOut, Package, ClipboardList } from 'lucide-react';
 import Logo from './Logo';
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('role');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
     navigate('/login');
   };
 
@@ -45,6 +47,24 @@ const Navbar = () => {
                       <History className="h-5 w-5 mr-3" />
                       Histórico
                     </Link>
+                    {userRole === 'ADMIN' && (
+                      <>
+                        <Link
+                          to="/add-product"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <Package className="h-5 w-5 mr-3" />
+                          Adicionar Produtos
+                        </Link>
+                        <Link
+                          to="/all-orders"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <ClipboardList className="h-5 w-5 mr-3" />
+                          Todos os Pedidos
+                        </Link>
+                      </>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

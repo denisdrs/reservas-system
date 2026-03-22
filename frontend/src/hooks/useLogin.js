@@ -23,6 +23,7 @@ export const useLogin = () => {
         const result = await response.json();
         const tokenLimpo = result.token.replace('Bearer ', '');
         localStorage.setItem('token', tokenLimpo);
+        localStorage.setItem('role',result.role);
         
         console.log('Login bem-sucedido:', result);
         setMessage("Login efetuado com sucesso!");

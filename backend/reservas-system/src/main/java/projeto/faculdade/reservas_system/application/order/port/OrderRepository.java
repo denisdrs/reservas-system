@@ -17,4 +17,6 @@ public interface OrderRepository {
     List<Order> findAllByUser(User user);
 
     List<Order> findByUserId(String userId);
+
+    List<Order> findAll();
 }

@@ -5,10 +5,9 @@ const AddProduct = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
-    price: '',
-    category: 'Entradas',
-    image: '',
-    description: ''
+    value: '',
+    quantity: '',
+    url: '',
   });
 
   const handleChange = (e) => {
@@ -20,13 +19,9 @@ const AddProduct = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
 
-    const produtoParaEnviar = {
-      name: formData.name,
-      value: formData.price.replace(',', '.'), 
-      quantity: 100, 
-      category: formData.category,
-      description: formData.description,
-      image: formData.image
+    const productToSend = {
+      ...formData,
+      value: formData.value.replace(',', '.'),
     };
 
     try {
@@ -36,15 +31,15 @@ const AddProduct = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify(produtoParaEnviar),
+        body: JSON.stringify(productToSend),
       });
 
       if (response.ok) {
         alert("Sucesso! Produto cadastrado via Site.");
         navigate('/orders'); 
       } else {
-        const erro = await response.json();
-        alert(`Erro: ${erro.message || 'Verifique o Token de Admin'}`);
+        const error = await response.json();
+        alert(`Erro: ${error.message || 'Verifique o Token de Admin'}`);
       }
     } catch (error) {
       console.error("Erro na conexão:", error);
@@ -66,27 +61,17 @@ const AddProduct = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Preço (R$)</label>
-              <input name="price" value={formData.price} onChange={handleChange} required className="w-full p-3 bg-gray-50 border rounded-lg outline-none" placeholder="29,90" />
+              <input name="value" value={formData.value} onChange={handleChange} required className="w-full p-3 bg-gray-50 border rounded-lg outline-none" placeholder="29,90" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
-              <select name="category" value={formData.category} onChange={handleChange} className="w-full p-3 bg-gray-50 border rounded-lg outline-none">
-                <option value="Entradas">Entradas</option>
-                <option value="Hambúrgueres">Hambúrgueres</option>
-                <option value="Bebidas">Bebidas</option>
-                <option value="Sobremesas">Sobremesas</option>
-              </select>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Quantidade</label>
+              <input type="number" name="quantity" value={formData.quantity} onChange={handleChange} required className="w-full p-3 bg-gray-50 border rounded-lg outline-none" placeholder="100" />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">URL da Imagem</label>
-            <input name="image" value={formData.image} onChange={handleChange} className="w-full p-3 bg-gray-50 border rounded-lg outline-none" placeholder="https://link-da-foto.jpg" />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Descrição</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} className="w-full p-3 bg-gray-50 border rounded-lg outline-none" rows="3" placeholder="Pão brioche, carne 180g..."></textarea>
+            <input name="url" value={formData.url} onChange={handleChange} className="w-full p-3 bg-gray-50 border rounded-lg outline-none" placeholder="https://link-da-foto.jpg" />
           </div>
 
           <button type="submit" className="w-full bg-orange-600 text-white font-bold p-4 rounded-xl hover:bg-orange-700 transition shadow-lg mt-4">
