@@ -1,7 +1,7 @@
+import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import RegisterForm from '../components/RegisterForm';
 import LoginImage from '../components/LoginImage';
-import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -12,8 +12,8 @@ const Register = () => {
         <div className="w-full max-w-sm">
           <Logo />
           <div className="mb-8 text-center lg:text-left">
-            <h1 className="text-2xl font-bold text-black">Crie sua conta</h1>
-            <p className="text-gray-500">Preencha os dados abaixo</p>
+            <h1 className="text-4xl font-extrabold text-gray-900">Crie sua conta</h1>
+            <p className="mt-2 text-gray-600">Junte-se a nós! Preencha seus dados para começar.</p>
           </div>
           <RegisterForm />
           <div className="mt-8 text-center">
@@ -21,9 +21,9 @@ const Register = () => {
               Já tem uma conta?{' '}
               <button
                 onClick={() => navigate('/login')}
-                className="font-semibold text-gray-900 underline underline-offset-4 hover:text-orange-500"
+                className="font-semibold text-orange-500 underline-offset-4 hover:underline"
               >
-                Fazer login
+                Faça seu login
               </button>
             </p>
           </div>

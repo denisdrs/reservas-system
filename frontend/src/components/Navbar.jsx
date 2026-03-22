@@ -1,5 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { ShoppingCart, User, History, LogOut, PlusCircle } from 'lucide-react';
+import Logo from './Logo';
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -11,30 +13,49 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between">
-          <div className="flex space-x-7">
-            <div>
-              <Link to="/orders" className="flex items-center py-4 px-2">
-                <span className="font-semibold text-gray-500 text-lg">Burger ADS</span>
-              </Link>
-            </div>
+    <nav className="bg-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          <div className="flex-shrink-0">
+            <Link to="/orders" className="flex items-center">
+              <Logo className="h-10 w-auto" />
+            </Link>
           </div>
-          <div className="relative flex items-center">
-            <button onClick={() => setDropdownOpen(!dropdownOpen)} className="p-2 rounded-full hover:bg-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20 top-10">
-                <Link to="/history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Histórico</Link>
-                <button onClick={handleLogout} className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Deslogar
-                </button>
-              </div>
-            )}
+          <div className="flex items-center space-x-4">
+            <Link to="/checkout" className="text-gray-600 hover:text-orange-500 transition-colors duration-300">
+              <ShoppingCart className="h-6 w-6" />
+            </Link>
+            <div className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="p-2 rounded-full text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              >
+                <User className="h-6 w-6" />
+              </button>
+              {dropdownOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-20 origin-top-right"
+                  onMouseLeave={() => setDropdownOpen(false)}
+                >
+                  <div className="py-1">
+                    <Link
+                      to="/history"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <History className="h-5 w-5 mr-3" />
+                      Histórico
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <LogOut className="h-5 w-5 mr-3" />
+                      Deslogar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
