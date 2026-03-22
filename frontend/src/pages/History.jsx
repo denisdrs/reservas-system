@@ -45,7 +45,7 @@ const History = () => {
             {orders.map((order) => (
               <div key={order.id} className="bg-white p-4 rounded-lg shadow">
                 <div className="flex justify-between">
-                  <span className="font-bold">Pedido #{order.id}</span>
+                  <span className="font-bold">Pedido #{order.orderId.split("-")[0]} | Status: #{order.status}</span>
                   <span className="text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div className="mt-2">
