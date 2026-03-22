@@ -47,4 +47,9 @@ public class UserController {
     public ResponseEntity<DefaultMessage<User>> delete(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(deleteUserUseCase.execute(user));
     }
+
+    @GetMapping
+    public ResponseEntity<User> getUser(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(user.withPassword(""));
+    }
 }

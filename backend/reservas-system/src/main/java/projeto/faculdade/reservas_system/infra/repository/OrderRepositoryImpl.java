@@ -48,4 +48,10 @@ public class OrderRepositoryImpl implements OrderRepository {
         log.info("Finding all orders for user id: {}", userId);
         return dao.findByUserId(userId);
     }
+
+    @Override
+    public List<Order> findAll() {
+        log.info("Finding all orders");
+        return dao.findAll();
+    }
 }

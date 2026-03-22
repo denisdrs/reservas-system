@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record OrderOutput(String orderId, List<ProductOutput> products,
-                          BigDecimal total, LocalDateTime createdAt) {
+                          BigDecimal total, LocalDateTime createdAt, String status) {
 
     public record ProductOutput(String name, BigDecimal value) {
 
