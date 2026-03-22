@@ -33,6 +33,7 @@ public class AuthenticationController {
         UserDetails user  = (UserDetails) auth.getPrincipal();
         log.info("User with email: {} authenticated", user.getUsername());
         String token = tokenService.generateToken(request.email());
-        return ResponseEntity.ok(new LoginResponse("Bearer " + token));
+        String role = user.getAuthorities().stream().findFirst().get().getAuthority();
+        return ResponseEntity.ok(new LoginResponse("Bearer " + token, role));
     }
 }

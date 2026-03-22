@@ -13,5 +13,6 @@ public interface ProductUseCaseMapper {
     @Mapping(target = "user", ignore = true)
     Product toProduct(RegisterProductInput input);
 
+    @Mapping(source = "url", target = "url")
     ProductOutput toProductOutput(Product product);
 }

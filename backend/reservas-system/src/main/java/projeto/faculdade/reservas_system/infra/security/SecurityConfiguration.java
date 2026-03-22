@@ -33,8 +33,9 @@ public class SecurityConfiguration {
                     authorize.requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll();
                     authorize.requestMatchers(HttpMethod.GET,"/api/products").permitAll();
                     authorize.requestMatchers(HttpMethod.POST,"/api/products").hasAuthority("ADMIN");
+                    authorize.requestMatchers(HttpMethod.POST,"/api/orders/all").hasAuthority("ADMIN");
                     authorize.requestMatchers(HttpMethod.GET, "/v3/api-docs*/**").permitAll();
-                    authorize.anyRequest().permitAll();
+                    authorize.anyRequest().authenticated();
                 })
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)

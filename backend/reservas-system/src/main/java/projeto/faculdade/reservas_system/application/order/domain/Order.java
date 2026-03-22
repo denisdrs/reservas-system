@@ -32,6 +32,9 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
     @ManyToMany
     @JoinTable(
             name = "order_products", // Nome da tabela de ligação
