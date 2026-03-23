@@ -27,8 +27,12 @@ export const CartProvider = ({ children }) => {
     return cart.map(item => ({ id: item.id, quantity: item.quantity }));
   }
 
+  const clearCart = () => {
+    setCart([]);
+  }
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, getCartTotal, getCartForApi }}>
+    <CartContext.Provider value={{ cart, addToCart, getCartTotal, getCartForApi, clearCart }}>
       {children}
     </CartContext.Provider>
   );
