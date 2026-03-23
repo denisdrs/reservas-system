@@ -55,7 +55,7 @@ const Orders = () => {
             <div key={produto.id} className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100">
               <div className="h-48 overflow-hidden bg-gray-200">
                 <img 
-                  src={produto.image || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500'} 
+                  src={produto.url || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500'} 
                   alt={produto.name}
                   className="w-full h-full object-cover"
                 />
