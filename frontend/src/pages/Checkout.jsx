@@ -4,7 +4,7 @@ import { useCart } from '../contexts/CartContext.jsx';
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cart, getCartTotal, getCartForApi } = useCart();
+  const { cart, getCartTotal, getCartForApi, clearCart } = useCart();
   const cartTotal = getCartTotal();
 
   const [payment, setPayment] = useState('Cartão');
@@ -60,6 +60,7 @@ const Checkout = () => {
 
       if (response.ok) {
         setIsFinished(true);
+        clearCart();
       } else {
         // Handle error
         console.error("Erro ao finalizar o pedido");
