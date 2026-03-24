@@ -33,11 +33,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build e Push imagem Prod
+      - name: Build e Push imagem Backend Prod
         working-directory: backend
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-api:prod
+
+      - name: Build e Push imagem Frontend Prod
+        working-directory: frontend
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/reservas-frontend:prod .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/reservas-frontend:prod
 
       - name: Deploy na EC2 via SSH
         uses: appleboy/ssh-action@v1
@@ -49,6 +55,8 @@ jobs:
           script: |
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker pull $DOCKERHUB_USERNAME/reservas-api:prod
+            docker pull $DOCKERHUB_USERNAME/reservas-frontend:prod
             cd ~/projeto
-            docker compose up -d --no-deps api-prod
+            docker compose up -d --no-deps --force-recreate api-prod
+            docker compose up -d --no-deps --force-recreate frontend
             docker image prune -f
