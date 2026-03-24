@@ -7,7 +7,7 @@ import AddProduct from './pages/AddProduct';
 import History from './pages/History';
 import Navbar from './components/Navbar';
 import AllOrders from './pages/AllOrders';
-
+import EditUser from './pages/EditUser';
 // Layout para rotas de usuário
 const UserLayout = () => (
   <div>
@@ -56,6 +56,7 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/history" element={<History />} />
+          <Route path="/edit-user" element={<EditUser />} />
         </Route>
         
         {/* Rotas de Admin */}
