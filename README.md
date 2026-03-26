@@ -108,21 +108,7 @@ A autenticação é feita via JWT (JSON Web Tokens).
 
 1.  **Login:** Envie uma requisição `POST` para `/auth/login` com as credenciais do usuário.
 2.  **Token:** O endpoint retornará um token JWT.
-3.  **Autorização:** Inclua o token JWT no cabeçalho `Authorization` de suas requisições protegidas: `Authorization: Bearer <token>`.
-
-## Permissões de Endpoint
-
-| Endpoint                          | USER | ADMIN |
-| :-------------------------------- | :--- | :---- |
-| `POST /auth/login`                | ✅   | ✅    |
-| `POST /auth/cadastro`             | ✅   | ✅    |
-| `GET  /reservas/minhas`           | ✅   | ✅    |
-| `POST /reservas`                  | ✅   | ✅    |
-| `GET  /admin/reservas`            | ❌   | ✅    |
-| `PUT  /admin/reservas/{id}/status`| ❌   | ✅    |
-| `GET  /admin/usuarios`            | ❌   | ✅    |
-| `POST /admin/produtos`            | ❌   | ✅    |
-| `PUT  /admin/usuarios/{id}`       | ❌   | ✅    |
+3.  **Autorização:** Inclua o token JWT no cabeçalho `Authorization` de suas requisições protegidas: `Authorization: Bearer <token>`.|
 
 ## Variáveis de Ambiente (Backend)
 
